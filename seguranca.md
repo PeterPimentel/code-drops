@@ -58,7 +58,7 @@ The reason we use salts is to stop precomputation attacks, such as [rainbow tabl
 
 Excelente [explicação](https://security.stackexchange.com/questions/17421/how-to-store-salt) sobre o uso de salt keys e como armazená-las.
 
-O salt pode ser armazenado no banco junto com a senha.
+- O salt pode ser armazenado no banco junto com a senha.
 
 #### Como gerar o salt
 ``const crypto = require('crypto')``
@@ -82,4 +82,32 @@ O resultado é um buffer
 
 ```hashedPwd.toString('hex')```
 
-### Como comprar o hash
+### Como comparar o hash
+
+Para comparar o hash é  necessário armazenalo.
+Esse armazenamento pode ser junto ao hash ou em uma tabela separada
+
+recomendo algo assim:
+
+``return [salt, hash].join('$');``
+
+Obtendo salt e o hash
+
+``const [salt, hash] = storedHashInDB.split('$')``
+
+Gerando novamente o hash e comparando ao armazenado
+
+``crypto.pbkdf2(password, salt, 100000, 512, 'sha512', callback)``
+
+``hashGerado === hash``
+
+### Time based One Time Password
+
+O secret é gerado ao realizar o login e enviado para o dispositivo do usuário para validar o login.
+
+Caso o invasor obtenha a senha do usuário ele ainda irá precisar do acesso ao smartphone para receber o secret.
+
+Importante ter um curto período de expiração.
+
+ 
+
